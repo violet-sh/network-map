@@ -13,23 +13,23 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
 	// Validate state
 	if (code === null || state === null || storedState === null) {
-		return new Response(null, {
+		return new Response("invalid state", {
 			status: 400
 		});
 	}
 	if (state !== storedState) {
-		return new Response(null, {
+		return new Response("invalid state 2", {
 			status: 400
 		});
 	}
 
-	// Validate Aithorization Code
+	// Validate Authorization Code
 	let tokens: OAuth2Tokens;
 	try {
 		tokens = await github.validateAuthorizationCode(code);
 	} catch (e) {
 		// Invalid code or client credentials
-		return new Response(null, {
+		return new Response("invalid code or creds", {
 			status: 400
 		});
 	}
