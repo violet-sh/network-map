@@ -42,7 +42,9 @@ export const router = t.router({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const pdbObj = await fetch(`https://www.peeringdb.com/api/fac/${input.fac}`, { headers: { Authorization: "Api-Key " + PEERING_DB_KEY } })
+			const pdbObj = await fetch(`https://www.peeringdb.com/api/fac/${input.peeringdbId}`, {
+				headers: { Authorization: "Api-Key " + PEERING_DB_KEY }
+			})
 				.then((req) => req.json())
 				.then((json) => json.data[0]);
 			const location = [pdbObj.address1, pdbObj.address2, pdbObj.city, pdbObj.state, pdbObj.country].filter((s) => s).join(", ");

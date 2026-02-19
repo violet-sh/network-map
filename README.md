@@ -12,13 +12,13 @@ This project is an NSP-ready network map which pulls data directly from PeeringD
 
 ### Environment Variables
 
-| Environment Variable         | Description                                       |
-| ---------------------------- | ------------------------------------------------- |
-| `PEERING_DB_KEY`             | The PeeringDB API key                             |
-| `DATABASE_URL`               | The URL of your PostgreSQL database               |
-| `GITHUB_CLIENT_ID`           | GitHub OAuth client ID                            |
-| `GITHUB_CLIENT_SECRET`       | GitHub OAuth client secret                        |
-| `ALLOWED_USERS`              | The GitHub usernames of users allowed to register |
+| Environment Variable   | Description                                       |
+| ---------------------- | ------------------------------------------------- |
+| `PEERING_DB_KEY`       | The PeeringDB API key                             |
+| `DATABASE_URL`         | The URL of your PostgreSQL database               |
+| `GITHUB_CLIENT_ID`     | GitHub OAuth client ID                            |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth client secret                        |
+| `ALLOWED_USERS`        | The GitHub usernames of users allowed to register |
 
 ### Getting started
 
