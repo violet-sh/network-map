@@ -3,14 +3,11 @@
 
 	let { connections, exchanges, providers, current_pop, logged_in, updatePop, removePop, addExchange, removeExchange }: PopDetailsProps = $props();
 
-	let current_provider = $derived(current_pop.provider);
-
-	let provider = $state("");
+	let type = $state(current_pop.type);
+	let provider = $state(current_pop.provider);
 	let new_exchange = $state("");
 
-	$effect(() => {
-		if (current_provider) provider = current_provider;
-	});
+	const orderedProviders = providers.toSorted((provider1, provider2) => provider1.name.localeCompare(provider2.name));
 
 	function submitAddExchange(event: SubmitEvent) {
 		event.preventDefault();
@@ -22,7 +19,11 @@
 	}
 
 	function selectProvider() {
-		updatePop(current_pop.id, provider);
+		updatePop(current_pop.id, { provider });
+	}
+
+	function selectType() {
+		updatePop(current_pop.id, { type });
 	}
 </script>
 
@@ -34,18 +35,31 @@
 		{/if}
 	</p>
 	<p>{current_pop.location}</p>
-	<p>{current_pop.id} | <a href="https://www.peeringdb.com/fac/{current_pop.fac}">PeeringDB</a></p>
+	<p>{current_pop.id} | <a href="https://www.peeringdb.com/fac/{current_pop.peeringdbId}">PeeringDB</a></p>
 
-	<br /><b>Provider:</b>
+	<br /><b>Type:</b>
+	{#if logged_in}
+		<select name="type" id="type" bind:value={type} onchange={selectType}>
+			{#each ["core", "edge", "roadm", "splice"] as type (type)}
+				<option value={type}>{type}</option>
+			{/each}
+		</select>
+		<br />
+	{:else}
+		<span>{current_pop.type || "None"}</span>
+		<br />
+	{/if}
+
+	<b>Provider:</b>
 	{#if logged_in}
 		<select name="provider" id="provider" bind:value={provider} onchange={selectProvider}>
-			<option value="" selected>No provider selected</option>
-			{#each providers as provider, idx (provider.name)}
-				<option value={idx}>{provider.name}</option>
+			<option value="" selected>Self</option>
+			{#each orderedProviders as provider (provider.id)}
+				<option value={provider.id}>{provider.name}</option>
 			{/each}
 		</select>
 	{:else}
-		<span>{current_provider || "None"}</span>
+		<span>{providers.find((provider) => provider.id == current_pop.provider)?.name || "Self"}</span>
 		<br />
 	{/if}
 
@@ -67,9 +81,9 @@
 				<li>
 					<a href="https://www.peeringdb.com/ix/{id}">{exchanges.find((ix) => ix.id === id)?.name}</a>
 					{#if logged_in}
-						<button class="delete" onclick={() => removeExchange(current_pop.id, id)} aria-label="Remove exchange"
-							><i class="fa-solid fa-plus"></i></button
-						>
+						<button class="delete" onclick={() => removeExchange(current_pop.id, id)} aria-label="Remove exchange">
+							<i class="fa-solid fa-plus"></i>
+						</button>
 					{/if}
 				</li>
 			{/each}

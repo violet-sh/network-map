@@ -3,51 +3,64 @@
 
 	let { providers, current_connection, logged_in, removeConnection, updateConnection }: ConnectionDetailsProps = $props();
 
-	let connection = $derived(current_connection);
-	let current_provider = $derived(current_connection.provider);
-
-	let provider = $state("");
+	let type = $state(current_connection.type);
+	let provider = $state(current_connection.provider);
 	let cable = $state("");
-	let route = $derived(JSON.stringify(connection.route.coordinates, null, 2));
-
-	$effect(() => {
-		if (current_provider) provider = current_provider;
-	});
+	let route = $derived(JSON.stringify(current_connection.route.coordinates, null, 2));
 
 	function selectProvider() {
-		updateConnection({ id: connection.id, provider });
+		updateConnection(current_connection.id, { provider });
+	}
+
+	function selectType() {
+		updateConnection(current_connection.id, { type });
 	}
 
 	function updateRoute() {
-		const input = connection.route;
+		const input = current_connection.route;
 		input.coordinates = JSON.parse(route);
-		updateConnection({ id: connection.id, route: JSON.stringify(input) });
+		updateConnection(current_connection.id, { route: JSON.stringify(input) });
 	}
 </script>
 
 <div class="details">
 	<p>
-		<b>{connection.name}</b>
+		<b>{current_connection.name}</b>
 		{#if logged_in}
-			<button class="delete" onclick={() => removeConnection(connection.id)} aria-label="Remove PoP"><i class="fa-solid fa-trash-can"></i></button>
+			<button class="delete" onclick={() => removeConnection(current_connection.id)} aria-label="Remove PoP">
+				<i class="fa-solid fa-trash-can"></i>
+			</button>
 		{/if}
 	</p>
 
-	<br /><b>Provider:</b>
+	<br /><b>Type:</b>
+	{#if logged_in}
+		<select name="type" id="type" bind:value={type} onchange={selectType}>
+			{#each ["long-haul", "regional", "metro"] as type (type)}
+				<option value={type}>{type}</option>
+			{/each}
+		</select>
+		<br />
+	{:else}
+		<span>{current_connection.type || "None"}</span>
+		<br />
+	{/if}
+
+	<b>Provider:</b>
 	{#if logged_in}
 		<select name="provider" id="provider" bind:value={provider} onchange={selectProvider}>
-			<option value="" selected>No provider selected</option>
+			<option value="" selected>Self</option>
 			{#each providers as provider (provider.id)}
 				<option value={provider.id}>{provider.name}</option>
 			{/each}
 		</select>
 	{:else}
-		<span>{providers.find((provider) => provider.id === current_provider)?.name || "None"}</span>
+		<span>{providers.find((provider) => provider.id === current_connection.provider)?.name || "Self"}</span>
 		<br />
 	{/if}
 
-	{#if connection.cable}
-		<p><b>Cable:</b> {connection.cable}</p>
+	{#if current_connection.cable}
+		<p><b>Cable:</b> {current_connection.cable}</p>
 	{/if}
 
 	{#if logged_in}

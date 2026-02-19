@@ -4,11 +4,14 @@
 	let type = $state("pop");
 
 	let id = $state("");
-	let fac = $state("");
+	let peeringdbId = $state("");
+	let popType = $state("");
+	let popProvider = $state("");
 
 	let pop1 = $state("");
 	let pop2 = $state("");
-	let provider = $state("");
+	let connectionType = $state("");
+	let connectionProvider = $state("");
 	let cable = $state("");
 
 	let name = $state("");
@@ -23,10 +26,10 @@
 		event.preventDefault();
 		switch (type) {
 			case "pop":
-				addPop(id, Number.parseInt(fac));
+				addPop(id, Number.parseInt(peeringdbId), popType, popProvider);
 				break;
 			case "connection":
-				addConnection(pop1, pop2, provider, cable);
+				addConnection(pop1, pop2, connectionType, connectionProvider, cable);
 				break;
 			case "provider":
 				addProvider(name, color);
@@ -48,23 +51,43 @@
 	</div>
 	{#if type === "pop"}
 		<input bind:value={id} placeholder="ID" required />
-		<input bind:value={fac} placeholder="Facility Code" required />
+		<input bind:value={peeringdbId} placeholder="PeeringDB ID" required />
+		<select name="popType" id="popType" bind:value={popType} required>
+			<option value="" disabled selected hidden>Select PoP type</option>
+			{#each ["core", "edge", "cls", "ila"] as popType (popType)}
+				<option value={popType}>{popType}</option>
+			{/each}
+		</select>
+		<select name="provider" id="provider" bind:value={popProvider} required>
+			<option value="" disabled selected hidden>Select provider</option>
+			<option value="">Self</option>
+			{#each orderedProviders as provider (provider.id)}
+				<option value={provider.id}>{provider.name}</option>
+			{/each}
+		</select>
 		<button type="submit">Create PoP</button>
 	{:else if type === "connection"}
-		<select name="pop1" id="pop1" bind:value={pop1} required>
-			<option value="" disabled selected hidden>Select PoP 1</option>
+		<input list="pop1" bind:value={pop1} placeholder="PoP 1" required />
+		<datalist id="pop1">
 			{#each orderedPops as pop (pop.id)}
 				<option value={pop.id}>{pop.id}</option>
 			{/each}
-		</select>
-		<select name="pop2" id="pop2" bind:value={pop2} required>
-			<option value="" disabled selected hidden>Select PoP 2</option>
+		</datalist>
+		<input list="pop2" bind:value={pop2} placeholder="PoP 2" required />
+		<datalist id="pop2">
 			{#each orderedPops as pop (pop.id)}
 				<option value={pop.id}>{pop.id}</option>
 			{/each}
+		</datalist>
+		<select name="connectionType" id="connectionType" bind:value={connectionType} required>
+			<option value="" disabled selected hidden>Select connection type</option>
+			{#each ["long-haul", "regional", "metro"] as connectionType (connectionType)}
+				<option value={connectionType}>{connectionType}</option>
+			{/each}
 		</select>
-		<select name="provider" id="provider" bind:value={provider} required>
+		<select name="provider" id="provider" bind:value={connectionProvider} required>
 			<option value="" disabled selected hidden>Select provider</option>
+			<option value="">Self</option>
 			{#each orderedProviders as provider (provider.id)}
 				<option value={provider.id}>{provider.name}</option>
 			{/each}

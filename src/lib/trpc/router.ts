@@ -36,7 +36,9 @@ export const router = t.router({
 		.input(
 			z.object({
 				id: z.string(),
-				fac: z.number()
+				peeringdbId: z.number(),
+				type: z.string(),
+				provider: z.string()
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -53,11 +55,13 @@ export const router = t.router({
 
 			const pop = {
 				id: input.id,
-				fac: input.fac,
+				peeringdbId: input.peeringdbId,
+				type: input.type,
 				name: pdbObj.name,
 				location,
 				longitude: longitude || 0,
-				latitude: latitude || 0
+				latitude: latitude || 0,
+				provider: input.provider
 			};
 			await ctx.db.insert(ctx.schema.popsTable).values(pop);
 		}),
@@ -67,7 +71,7 @@ export const router = t.router({
 		.input(
 			z.object({
 				id: z.string(),
-				active: z.boolean().optional(),
+				type: z.string().optional(),
 				provider: z.string().optional()
 			})
 		)
@@ -78,7 +82,7 @@ export const router = t.router({
 				throw Error("Pop doesn't exist");
 			}
 
-			const updated = { active: input.active, provider: input.provider };
+			const updated = { type: input.type, provider: input.provider };
 			await ctx.db.update(ctx.schema.popsTable).set(updated).where(eq(ctx.schema.popsTable.id, pop.id));
 		}),
 
@@ -192,6 +196,7 @@ export const router = t.router({
 		.input(
 			z.object({
 				pops: z.string().array(),
+				type: z.string(),
 				provider: z.string(),
 				cable: z.string().optional()
 			})
@@ -224,6 +229,7 @@ export const router = t.router({
 			z.object({
 				id: z.string(),
 				pops: z.string().array().optional(),
+				type: z.string().optional(),
 				provider: z.string().optional(),
 				cable: z.string().optional(),
 				route: z.string().optional()
@@ -241,7 +247,7 @@ export const router = t.router({
 				route = JSON.parse(input.route);
 			}
 
-			const updated = { pops: input.pops, provider: input.provider, cable: input.cable, route };
+			const updated = { pops: input.pops, type: input.type, provider: input.provider, cable: input.cable, route };
 			await ctx.db.update(ctx.schema.connectionsTable).set(updated).where(eq(ctx.schema.connectionsTable.id, connection.id));
 		}),
 

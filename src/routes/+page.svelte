@@ -43,16 +43,16 @@
 		};
 	});
 
-	async function addPop(id: string, fac: number) {
-		const input = { id, fac };
+	async function addPop(id: string, peeringdbId: number, type: string, provider: string) {
+		const input = { id, peeringdbId, type, provider };
 		await trpc().addPop.mutate(input);
 		await invalidateAll();
 		create_open = false;
 		map.update();
 	}
 
-	async function updatePop(id: string, provider: string) {
-		const input = { id, provider };
+	async function updatePop(id: string, { type, provider }: { type?: string; provider?: string }) {
+		const input = { id, type, provider };
 		await trpc().updatePop.mutate(input);
 		await invalidateAll();
 		selectPop(id);
@@ -67,16 +67,16 @@
 		map.update();
 	}
 
-	async function addConnection(pop1: string, pop2: string, provider: string, cable: string) {
-		const input = { pops: [pop1, pop2], provider, cable };
+	async function addConnection(pop1: string, pop2: string, type: string, provider: string, cable: string) {
+		const input = { pops: [pop1, pop2], type, provider, cable };
 		await trpc().addConnection.mutate(input);
 		await invalidateAll();
 		create_open = false;
 		map.update();
 	}
 
-	async function updateConnection(input: { id: string; pops?: string[]; provider?: string; cable?: string; route?: string }) {
-		await trpc().updateConnection.mutate(input);
+	async function updateConnection(id: string, input: { pops?: string[]; type?: string; provider?: string; cable?: string; route?: string }) {
+		await trpc().updateConnection.mutate({ id, ...input });
 		await invalidateAll();
 		selectConnection(current_connection!);
 		map.update();

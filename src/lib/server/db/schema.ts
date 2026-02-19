@@ -1,16 +1,16 @@
 import { createId } from "@paralleldrive/cuid2";
 import { lineString } from "drizzle-postgis/models";
-import { pgTable, integer, text, boolean, real, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, integer, text, real, jsonb, timestamp } from "drizzle-orm/pg-core";
 
 export const popsTable = pgTable("pops", {
 	id: text().primaryKey(),
-	fac: integer().notNull().unique(),
+	type: text().notNull(),
 	name: text().notNull(),
-	active: boolean().notNull().default(true),
 	location: text().notNull(),
 	longitude: real().notNull(),
 	latitude: real().notNull(),
-	provider: text(),
+	provider: text().notNull(),
+	peeringdbId: integer(),
 	connections: jsonb().notNull().default([]),
 	exchanges: jsonb().notNull().default([])
 });
@@ -22,6 +22,7 @@ export const exchangesTable = pgTable("exchanges", {
 
 export const connectionsTable = pgTable("connections", {
 	id: text().primaryKey().$defaultFn(createId),
+	type: text().notNull(),
 	name: text().notNull(),
 	pops: jsonb().notNull().default([]),
 	provider: text().notNull(),

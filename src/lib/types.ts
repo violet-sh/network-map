@@ -4,13 +4,13 @@ export type Cuid2 = string;
 
 export interface Pop {
 	id: string;
-	fac: number;
+	type: "core" | "edge" | "cls" | "ila";
 	name: string;
-	active: boolean;
 	location: string;
 	longitude: number;
 	latitude: number;
-	provider?: Cuid2 | null;
+	provider: Cuid2;
+	peeringdbId?: number | null;
 	connections: Cuid2[];
 	exchanges: number[];
 }
@@ -22,9 +22,10 @@ export interface Exchange {
 
 export interface Connection {
 	id: Cuid2;
+	type: "long-haul" | "regional" | "metro";
 	name: string;
 	pops: string[];
-	provider: string;
+	provider: Cuid2;
 	cable: string | null;
 	route: LineString;
 }
@@ -57,7 +58,7 @@ export interface PopDetailsProps {
 	current_pop: Pop;
 	logged_in: boolean;
 
-	updatePop: (id: string, provider: string) => void;
+	updatePop: (id: string, { type, provider }: { type?: string; provider?: string }) => void;
 	removePop: (id: string) => void;
 	addExchange: (pop: string, id: number) => void;
 	removeExchange: (pop: string, id: number) => void;
@@ -69,7 +70,7 @@ export interface ConnectionDetailsProps {
 	logged_in: boolean;
 
 	removeConnection: (id: string) => void;
-	updateConnection: (input: { id: string; pops?: string[]; provider?: string; cable?: string; route?: string }) => void;
+	updateConnection: (id: string, input: { pops?: string[]; type?: string; provider?: string; cable?: string; route?: string }) => void;
 }
 
 export interface MapProps {
@@ -89,7 +90,7 @@ export interface CreateProps {
 	pops: Pop[];
 	providers: Provider[];
 
-	addPop: (id: string, fac: number) => void;
-	addConnection: (pop1: string, pop2: string, provider: string, cable: string) => void;
+	addPop: (id: string, peeringdbId: number, type: string, provider: string) => void;
+	addConnection: (pop1: string, pop2: string, type: string, provider: string, cable: string) => void;
 	addProvider: (name: string, color: string) => void;
 }

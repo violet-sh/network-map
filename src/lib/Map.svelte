@@ -136,7 +136,7 @@
 					coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
 				}
 
-				const html = [`<p><b>${pop.name}</b></p>`, `<p>${pop.id}</p>`];
+				const html = [`<p><b>${pop.name}</b></p>`, `<p>${pop.id} | ${pop.type}</p>`];
 
 				if (pop.connections.length > 0) {
 					html.push(`<br><b>Connections:</b> ${pop.connections.length}`);
