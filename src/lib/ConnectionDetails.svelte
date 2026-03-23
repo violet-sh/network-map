@@ -3,13 +3,19 @@
 
 	let { providers, current_connection, logged_in, removeConnection, updateConnection }: ConnectionDetailsProps = $props();
 
+	let current_provider = $derived(current_connection.provider);
+
 	let type = $state(current_connection.type);
 	let provider = $state(current_connection.provider);
 	let cable = $state("");
 	let route = $derived(JSON.stringify(current_connection.route.coordinates, null, 2));
 
+	$effect(() => {
+		if (current_provider !== undefined) provider = current_provider;
+	});
+
 	function selectProvider() {
-		updateConnection(current_connection.id, { provider });
+		updateConnection(current_connection.id, { provider: provider });
 	}
 
 	function selectType() {

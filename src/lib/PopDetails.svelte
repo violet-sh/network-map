@@ -3,9 +3,15 @@
 
 	let { connections, exchanges, providers, current_pop, logged_in, updatePop, removePop, addExchange, removeExchange }: PopDetailsProps = $props();
 
+	let current_provider = $derived(current_pop.provider);
+
 	let type = $state(current_pop.type);
 	let provider = $state(current_pop.provider);
 	let new_exchange = $state("");
+
+	$effect(() => {
+		if (current_provider !== undefined) provider = current_provider;
+	});
 
 	const orderedProviders = providers.toSorted((provider1, provider2) => provider1.name.localeCompare(provider2.name));
 
