@@ -1,15 +1,13 @@
-import { trpc } from "#lib/trpc/server.ts";
+import { orpc } from "#lib/orpc/server.ts";
 
 import type { FeatureCollection, LineString, Point } from "drizzle-postgis";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (event) => {
-	const api = await trpc(event);
-
-	const pops = await api.getPops();
-	const exchanges = await api.getExchanges();
-	const connections = await api.getConnections();
-	const providers = await api.getProviders();
+	const pops = await orpc.getPops();
+	const exchanges = await orpc.getExchanges();
+	const connections = await orpc.getConnections();
+	const providers = await orpc.getProviders();
 
 	const popsJson: FeatureCollection<Point> = {
 		type: "FeatureCollection",

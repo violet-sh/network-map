@@ -1,20 +1,20 @@
 import { db, schema } from "#lib/server/db/index.ts";
 import { sessionCookieName, validateSessionToken } from "#lib/server/auth.ts";
-import type { RequestEvent } from "@sveltejs/kit";
+import type { Cookies } from "@sveltejs/kit";
 
-export async function createContext(event: RequestEvent) {
-	const sessionToken = event.cookies.get(sessionCookieName);
+export async function createContext(opts: { cookies?: Cookies }) {
+	const sessionToken = opts.cookies?.get(sessionCookieName);
 
 	if (!sessionToken) {
-		return { event, db, schema };
+		return { db, schema };
 	}
 
 	const { user } = await validateSessionToken(sessionToken);
 	if (user) {
-		return { event, db, schema, userId: user.id };
+		return { db, schema, userId: user.id };
 	}
 
-	return { event, db, schema };
+	return { db, schema };
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>;

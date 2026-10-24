@@ -10,7 +10,7 @@
 	import Create from "#lib/Create.svelte";
 
 	import { invalidateAll } from "$app/navigation";
-	import { trpc } from "#lib/trpc/client.ts";
+	import { orpc } from "#lib/orpc/client.ts";
 	import { onMount } from "svelte";
 
 	import type { Connection, Pop } from "#lib/types.ts";
@@ -45,7 +45,7 @@
 
 	async function addPop(id: string, peeringdbId: number, type: string, provider: string) {
 		const input = { id, peeringdbId, type, provider };
-		await trpc().addPop.mutate(input);
+		await orpc.addPop(input);
 		await invalidateAll();
 		create_open = false;
 		map.update();
@@ -53,7 +53,7 @@
 
 	async function updatePop(id: string, { type, provider }: { type?: string; provider?: string }) {
 		const input = { id, type, provider };
-		await trpc().updatePop.mutate(input);
+		await orpc.updatePop(input);
 		await invalidateAll();
 		selectPop(id);
 		map.update();
@@ -61,7 +61,7 @@
 
 	async function removePop(id: string) {
 		const input = { id };
-		await trpc().deletePop.mutate(input);
+		await orpc.deletePop(input);
 		await invalidateAll();
 		deselectPop();
 		map.update();
@@ -69,14 +69,14 @@
 
 	async function addConnection(pop1: string, pop2: string, type: string, provider: string, cable: string) {
 		const input = { pops: [pop1, pop2], type, provider, cable };
-		await trpc().addConnection.mutate(input);
+		await orpc.addConnection(input);
 		await invalidateAll();
 		create_open = false;
 		map.update();
 	}
 
 	async function updateConnection(id: string, input: { pops?: string[]; type?: string; provider?: string; cable?: string; route?: string }) {
-		await trpc().updateConnection.mutate({ id, ...input });
+		await orpc.updateConnection({ id, ...input });
 		await invalidateAll();
 		selectConnection(current_connection!);
 		map.update();
@@ -84,7 +84,7 @@
 
 	async function removeConnection(id: string) {
 		const input = { id };
-		await trpc().deleteConnection.mutate(input);
+		await orpc.deleteConnection(input);
 		await invalidateAll();
 		deselectConnection();
 		map.update();
@@ -92,7 +92,7 @@
 
 	async function addExchange(pop: string, id: number) {
 		const input = { pop, id };
-		await trpc().addExchangeToPop.mutate(input);
+		await orpc.addExchangeToPop(input);
 		await invalidateAll();
 		selectPop(pop);
 		map.update();
@@ -100,7 +100,7 @@
 
 	async function removeExchange(pop: string, id: number) {
 		const input = { pop, id };
-		await trpc().removeExchangeFromPop.mutate(input);
+		await orpc.removeExchangeFromPop(input);
 		await invalidateAll();
 		selectPop(pop);
 		map.update();
@@ -108,7 +108,7 @@
 
 	async function addProvider(name: string, color: string) {
 		const input = { name, color };
-		await trpc().addProvider.mutate(input);
+		await orpc.addProvider(input);
 		await invalidateAll();
 		create_open = false;
 		map.update();
