@@ -2,40 +2,80 @@ import type { FeatureCollection, LineString, Point } from "drizzle-postgis";
 
 export type Cuid2 = string;
 
-export interface Pop {
-	id: string;
-	type: "core" | "edge" | "cls" | "ila";
+export type RegionCode = string;
+export type PoPId = string;
+export type ExchangeId = string;
+
+// Core types
+//
+// NOTE: A provider is the network that owns/operates a specific asset
+//
+export interface Region {
+	code: RegionCode; // Usually based on air port code
 	name: string;
-	location: string;
-	longitude: number;
-	latitude: number;
+}
+
+export interface PoP {
+	id: PoPId; // Region code + index, e.g. `nyc1`
+	type:
+		| "core" // Part of the long-haul backbone, ROADM + router
+		| "edge" // Local PoP, ROADM + router
+		| "cls" // Cable Landing Station, ROADM
+		| "ila"; // In-Line Amplifier, ROADM
+	name: string;
+	region: RegionCode;
+	address: string;
+	coordinates: number[];
 	provider: Cuid2;
 	peeringdbId?: number | null;
-	connections: Cuid2[];
-	exchanges: number[];
+	exchanges: ExchangeId[];
 }
 
 export interface Exchange {
-	id: number;
+	id: ExchangeId;
 	name: string;
+	cacheTimestamp: Date; // Time of last update, re-fetched accoring to cache TTL
 }
 
-export interface Connection {
+export interface Segment {
 	id: Cuid2;
-	type: "long-haul" | "regional" | "metro";
-	name: string;
-	pops: string[];
+	type: "subsea" | "underground" | "aerial";
+	rightOfWay: "highway" | "railway" | "power line" | "road" | null;
+	geometry: LineString;
+}
+
+export interface Route {
+	id: Cuid2;
+	type: "long-haul" | "metro";
+	name: string | null;
 	provider: Cuid2;
-	cable: string | null;
-	route: LineString;
+	pops: PoPId[];
+	segments: Cuid2[];
+	status: "proposal" | "under construction" | "active";
+	available: {
+		waves: boolean;
+		fiber: boolean;
+	};
 }
 
-export interface Provider {
+export interface Wave {
 	id: Cuid2;
+	pops: PoPId[];
+	provider: Cuid2;
+	route: Cuid2 | null;
+}
+
+export interface Network {
+	id: Cuid2;
+	type: "carrier" | "custom";
 	name: string;
 	color: string;
+	pops: PoPId[];
+	waves: Cuid2[];
+	routes: Cuid2[]; // Dark fiber
 }
 
+// Auth
 export interface User {
 	id: Cuid2;
 	githubId: number;
@@ -55,7 +95,7 @@ export interface PopDetailsProps {
 	connections: Connection[];
 	exchanges: Exchange[];
 	providers: Provider[];
-	current_pop: Pop;
+	current_pop: PoP;
 	logged_in: boolean;
 
 	updatePop: (id: string, { type, provider }: { type?: string; provider?: string }) => void;
@@ -74,7 +114,7 @@ export interface ConnectionDetailsProps {
 }
 
 export interface MapProps {
-	pops: Pop[];
+	pops: PoP[];
 	connections: Connection[];
 	providers: Provider[];
 	popsJson: FeatureCollection<Point>;
@@ -87,7 +127,7 @@ export interface MapProps {
 }
 
 export interface CreateProps {
-	pops: Pop[];
+	pops: PoP[];
 	providers: Provider[];
 
 	addPop: (id: string, peeringdbId: number, type: string, provider: string) => void;
