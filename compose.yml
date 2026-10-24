@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgis/postgis:18-3.6-alpine
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: database
+      POSTGRES_DB: network
+    volumes:
+      - pgdata:/var/lib/postgresql
+volumes:
+  pgdata:
