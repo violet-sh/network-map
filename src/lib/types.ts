@@ -4,7 +4,7 @@ export type Cuid2 = string;
 
 export type RegionCode = string;
 export type PoPId = string;
-export type ExchangeId = string;
+export type ExchangeId = number;
 
 // Core types
 //
