@@ -12,110 +12,65 @@
 	import { invalidateAll } from "$app/navigation";
 	import { orpc } from "#lib/orpc/client.ts";
 	import { onMount } from "svelte";
+	import { createQuery } from "@tanstack/svelte-query";
 
-	import type { Connection, Pop } from "#lib/types.ts";
+	import type { Network, PoP } from "#lib/types.ts";
+	import type { FeatureCollection, LineString, Point } from "geojson";
+	import type { PageProps } from "./$types";
 
-	let { data } = $props();
-	const pops = $derived(data.pops);
-	const exchanges = $derived(data.exchanges);
-	const connections = $derived(data.connections);
-	const providers = $derived(data.providers);
-	const popsJson = $derived(data.popsJson);
-	const connectionsJson = $derived(data.connectionsJson);
+	let { data }: PageProps = $props();
 	const user = $derived(data.user);
+
+	const pops = createQuery(() => orpc.getPops.queryOptions());
+	const exchanges = createQuery(() => orpc.getExchanges.queryOptions());
+	const connections = createQuery(() => orpc.getConnections.queryOptions());
+	const providers = createQuery(() => orpc.getProviders.queryOptions());
+
+	const popsJson: FeatureCollection<Point> = $derived({
+		type: "FeatureCollection",
+		features: pops.data?.map((pop) => {
+			return {
+				type: "Feature",
+				geometry: {
+					type: "Point",
+					coordinates: pop.coordinates
+				},
+				properties: {
+					id: pop.id,
+					provider: providers.data?.findIndex((provider) => provider.id === pop.provider)
+				}
+			};
+		})
+	});
+	const connectionsJson: FeatureCollection<LineString> = $derived({
+		type: "FeatureCollection",
+		features: user
+			? connections.data?.map((connection) => {
+					const geometry = connection.route;
+
+					return {
+						type: "Feature",
+						geometry,
+						properties: {
+							id: connection.id,
+							provider: providers.data?.findIndex((provider) => provider.id === connection.provider)
+						}
+					};
+				})
+			: []
+	});
 
 	let logged_in = $derived(user !== null);
 
-	let current_pop: Pop | null = $state(null);
+	let current_pop: PoP | null = $state(null);
 	let current_connection: Connection | null = $state(null);
 
 	let create_open = $state(false);
 
 	let map: Map;
 
-	onMount(() => {
-		const refresh = setInterval(() => {
-			invalidateAll();
-		}, 30_000);
-
-		return () => {
-			clearInterval(refresh);
-		};
-	});
-
-	async function addPop(id: string, peeringdbId: number, type: string, provider: string) {
-		const input = { id, peeringdbId, type, provider };
-		await orpc.addPop(input);
-		await invalidateAll();
-		create_open = false;
-		map.update();
-	}
-
-	async function updatePop(id: string, { type, provider }: { type?: string; provider?: string }) {
-		const input = { id, type, provider };
-		await orpc.updatePop(input);
-		await invalidateAll();
-		selectPop(id);
-		map.update();
-	}
-
-	async function removePop(id: string) {
-		const input = { id };
-		await orpc.deletePop(input);
-		await invalidateAll();
-		deselectPop();
-		map.update();
-	}
-
-	async function addConnection(pop1: string, pop2: string, type: string, provider: string, cable: string) {
-		const input = { pops: [pop1, pop2], type, provider, cable };
-		await orpc.addConnection(input);
-		await invalidateAll();
-		create_open = false;
-		map.update();
-	}
-
-	async function updateConnection(id: string, input: { pops?: string[]; type?: string; provider?: string; cable?: string; route?: string }) {
-		await orpc.updateConnection({ id, ...input });
-		await invalidateAll();
-		selectConnection(current_connection!);
-		map.update();
-	}
-
-	async function removeConnection(id: string) {
-		const input = { id };
-		await orpc.deleteConnection(input);
-		await invalidateAll();
-		deselectConnection();
-		map.update();
-	}
-
-	async function addExchange(pop: string, id: number) {
-		const input = { pop, id };
-		await orpc.addExchangeToPop(input);
-		await invalidateAll();
-		selectPop(pop);
-		map.update();
-	}
-
-	async function removeExchange(pop: string, id: number) {
-		const input = { pop, id };
-		await orpc.removeExchangeFromPop(input);
-		await invalidateAll();
-		selectPop(pop);
-		map.update();
-	}
-
-	async function addProvider(name: string, color: string) {
-		const input = { name, color };
-		await orpc.addProvider(input);
-		await invalidateAll();
-		create_open = false;
-		map.update();
-	}
-
 	function selectPop(id: string) {
-		current_pop = pops.find((pop) => pop.id === id) || null;
+		current_pop = pops.data?.find((pop) => pop.id === id) || null;
 	}
 
 	function deselectPop() {
@@ -128,6 +83,11 @@
 
 	function deselectConnection() {
 		current_connection = null;
+	}
+
+	function refreshMap() {
+		invalidateAll();
+		map.update();
 	}
 </script>
 
@@ -149,15 +109,15 @@
 {/if}
 
 {#if create_open}
-	<Create {pops} {providers} {addPop} {addConnection} {addProvider} />
+	<Create {pops} {providers} {refreshMap} />
 {/if}
 
 {#if current_pop != null}
-	<PopDetails {connections} {exchanges} {providers} {current_pop} {logged_in} {updatePop} {removePop} {addExchange} {removeExchange} />
+	<PopDetails {connections} {exchanges} {providers} {current_pop} {logged_in} {refreshMap} />
 {/if}
 
 {#if current_connection != null}
-	<ConnectionDetails {providers} {current_connection} {logged_in} {removeConnection} {updateConnection} />
+	<ConnectionDetails {providers} {current_connection} {logged_in} {refreshMap} />
 {/if}
 
 <Map

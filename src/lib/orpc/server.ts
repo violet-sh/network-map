@@ -1,6 +1,8 @@
 import { createContext } from "./context";
-
-import { createRouterClient } from "@orpc/server";
 import { router } from "./router";
+import { createRouterClient } from "@orpc/server";
+import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
-export const orpc = createRouterClient(router, { context: createContext({}) });
+const client = createRouterClient(router, { context: createContext({}) });
+
+export const orpc = createTanstackQueryUtils(client);
