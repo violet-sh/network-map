@@ -1,11 +1,11 @@
-import { PEERING_DB_KEY } from "$env/static/private";
-import { PUBLIC_MAPTILER_KEY } from "$env/static/public";
+import { PEERING_DB_KEY } from "$app/env/private";
+import { PUBLIC_MAPTILER_KEY } from "$app/env/public";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
-import type { Context } from "$lib/trpc/context";
-import type { Connection, Exchange, Pop, Provider } from "$lib/types";
+import type { Context } from "#lib/trpc/context.ts";
+import type { Connection, Exchange, Pop, Provider } from "#lib/types.ts";
 import type { LineString } from "drizzle-postgis";
 import { geocoding } from "@maptiler/client";
 

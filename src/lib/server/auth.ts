@@ -1,4 +1,4 @@
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "$env/static/private";
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "$app/env/private";
 import { createId } from "@paralleldrive/cuid2";
 import { GitHub } from "arctic";
 import { eq } from "drizzle-orm";

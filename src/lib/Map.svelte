@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { PUBLIC_MAPTILER_KEY } from "$env/static/public";
+	import { PUBLIC_MAPTILER_KEY } from "$app/env/public";
 
-	import maplibregl from "maplibre-gl";
+	import { Map, Popup } from "maplibre-gl";
 
 	import { onMount } from "svelte";
 
-	import type { MapProps } from "$lib/types";
+	import type { MapProps } from "#lib/types.ts";
 	import type { Point } from "drizzle-postgis";
 	import type { ExpressionSpecification, GeoJSONSource } from "maplibre-gl";
 
 	let { pops, connections, providers, popsJson, connectionsJson, selectPop, deselectPop, selectConnection, deselectConnection }: MapProps = $props();
 
-	let map: maplibregl.Map;
+	let map: Map;
 
 	let providerMap = $derived(providers.flatMap((provider, idx) => [idx, provider.color]));
 	let providerColors: ExpressionSpecification = $derived(["step", ["get", "provider"], "#6D28D9", ...providerMap]);
@@ -24,7 +24,7 @@
 	}
 
 	onMount(async () => {
-		map = new maplibregl.Map({
+		map = new Map({
 			container: "map",
 			style: `https://api.maptiler.com/maps/dataviz-light/style.json?key=${PUBLIC_MAPTILER_KEY}`,
 			center: [-74, 42.5],
@@ -107,12 +107,12 @@
 				});
 			});
 
-			const popPopup = new maplibregl.Popup({
+			const popPopup = new Popup({
 				closeButton: false,
 				closeOnClick: false
 			});
 
-			const connectionPopup = new maplibregl.Popup({
+			const connectionPopup = new Popup({
 				closeButton: false,
 				closeOnClick: false
 			});

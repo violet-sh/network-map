@@ -1,5 +1,5 @@
-import { db, schema } from "$lib/server/db";
-import { sessionCookieName, validateSessionToken } from "$lib/server/auth";
+import { db, schema } from "#lib/server/db/index.ts";
+import { sessionCookieName, validateSessionToken } from "#lib/server/auth.ts";
 import type { RequestEvent } from "@sveltejs/kit";
 
 export async function createContext(event: RequestEvent) {

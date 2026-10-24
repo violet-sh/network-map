@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PopDetailsProps } from "$lib/types";
+	import type { PopDetailsProps } from "#lib/types.ts";
 
 	let { connections, exchanges, providers, current_pop, logged_in, updatePop, removePop, addExchange, removeExchange }: PopDetailsProps = $props();
 

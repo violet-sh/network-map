@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CreateProps } from "$lib/types";
+	import type { CreateProps } from "#lib/types.ts";
 
 	let type = $state("pop");
 

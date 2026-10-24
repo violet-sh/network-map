@@ -1,4 +1,4 @@
-import { trpc } from "$lib/trpc/server";
+import { trpc } from "#lib/trpc/server.ts";
 
 import type { FeatureCollection, LineString, Point } from "drizzle-postgis";
 import type { PageServerLoad } from "./$types";

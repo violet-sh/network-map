@@ -1,4 +1,4 @@
-import { github } from "$lib/server/auth";
+import { github } from "#lib/server/auth.ts";
 import { generateState } from "arctic";
 
 import type { RequestEvent } from "@sveltejs/kit";

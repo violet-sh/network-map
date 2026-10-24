@@ -4,16 +4,16 @@
 	import "@fortawesome/fontawesome-free/css/solid.css";
 	import "maplibre-gl/dist/maplibre-gl.css";
 
-	import Map from "$lib/Map.svelte";
-	import PopDetails from "$lib/PopDetails.svelte";
-	import ConnectionDetails from "$lib/ConnectionDetails.svelte";
-	import Create from "$lib/Create.svelte";
+	import Map from "#lib/Map.svelte";
+	import PopDetails from "#lib/PopDetails.svelte";
+	import ConnectionDetails from "#lib/ConnectionDetails.svelte";
+	import Create from "#lib/Create.svelte";
 
 	import { invalidateAll } from "$app/navigation";
-	import { trpc } from "$lib/trpc/client";
+	import { trpc } from "#lib/trpc/client.ts";
 	import { onMount } from "svelte";
 
-	import type { Connection, Pop } from "$lib/types";
+	import type { Connection, Pop } from "#lib/types.ts";
 
 	let { data } = $props();
 	const pops = $derived(data.pops);

@@ -1,5 +1,5 @@
-import { createContext } from "$lib/trpc/context";
-import { router } from "$lib/trpc/router";
+import { createContext } from "#lib/trpc/context.ts";
+import { router } from "#lib/trpc/router.ts";
 import type { RequestHandler } from "@sveltejs/kit";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 

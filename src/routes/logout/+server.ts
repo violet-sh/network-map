@@ -1,4 +1,4 @@
-import { invalidateSession, deleteSessionTokenCookie } from "$lib/server/auth";
+import { invalidateSession, deleteSessionTokenCookie } from "#lib/server/auth.ts";
 import { type RequestEvent, fail, redirect } from "@sveltejs/kit";
 
 export async function GET(event: RequestEvent) {

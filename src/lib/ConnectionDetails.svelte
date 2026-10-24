@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ConnectionDetailsProps } from "$lib/types";
+	import type { ConnectionDetailsProps } from "#lib/types.ts";
 
 	let { providers, current_connection, logged_in, removeConnection, updateConnection }: ConnectionDetailsProps = $props();
 

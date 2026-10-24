@@ -1,6 +1,6 @@
-import { ALLOWED_USERS } from "$env/static/private";
-import { github, createSession, setSessionTokenCookie } from "$lib/server/auth";
-import { db, schema } from "$lib/server/db";
+import { ALLOWED_USERS } from "$app/env/private";
+import { github, createSession, setSessionTokenCookie } from "#lib/server/auth.ts";
+import { db, schema } from "#lib/server/db/index.ts";
 
 import type { RequestEvent } from "@sveltejs/kit";
 import type { OAuth2Tokens } from "arctic";
